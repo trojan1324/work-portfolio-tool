@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Work Portfolio Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #f1f3f4;
+            --bg-card: #ffffff;
+            --border-subtle: rgba(0,0,0,0.08);
+            --border-medium: rgba(0,0,0,0.15);
+            --text-primary: #1a1a1a;
+            --text-secondary: #5f6368;
+            --text-muted: #80868b;
+            --accent-blue: #1a73e8;
+            --accent-blue-dim: rgba(26,115,232,0.1);
+            --green-experience: #34a853;
+            --yellow-experience: #f9ab00;
+            --red-experience: #ea4335;
+            --green-glow: rgba(52,168,83,0.25);
+            --yellow-glow: rgba(249,171,0,0.25);
+            --red-glow: rgba(234,67,53,0.25);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            padding: 16px 32px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #8b5cf6 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            fill: none;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-medium);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--text-muted);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+            border-color: #1557b0;
+        }
+
+        .btn-primary:disabled {
+            background: var(--text-muted);
+            border-color: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Time Budget Indicator */
+        .time-budget {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .time-budget-bar {
+            width: 120px;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .time-budget-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .time-budget-fill.ok {
+            background: var(--green-experience);
+        }
+
+        .time-budget-fill.warning {
+            background: var(--yellow-experience);
+        }
+
+        .time-budget-fill.over {
+            background: var(--red-experience);
+        }
+
+        .time-budget-text {
+            font-family: 'IBM Plex Mono', monospace;
+            min-width: 80px;
+        }
+
+        .time-budget-text.over {
+            color: var(--red-experience);
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Chart Area */
+        .chart-area {
+            flex: 1;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            max-width: min(70vh, 680px);
+            aspect-ratio: 1;
+            position: relative;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: visible;
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-grid {
+            position: absolute;
+            inset: 70px 60px 70px 90px;
+        }
+
+        /* Quadrant Shading */
+        .quadrant-shade {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .quadrant-shade.top-right {
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 50%;
+            background: linear-gradient(135deg, rgba(52,168,83,0.06) 0%, rgba(52,168,83,0.02) 100%);
+            border-radius: 0 0 0 0;
+        }
+
+        .quadrant-shade.bottom-left {
+            bottom: 0;
+            left: 0;
+            width: 50%;
+            height: 50%;
+            background: linear-gradient(315deg, rgba(234,67,53,0.06) 0%, rgba(234,67,53,0.02) 100%);
+        }
+
+        .quadrant-label {
+            position: absolute;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 6px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .quadrant-label.top-right {
+            top: 12px;
+            right: 12px;
+            color: #1e7e34;
+            background: rgba(52,168,83,0.1);
+        }
+
+        .quadrant-label.bottom-left {
+            bottom: 12px;
+            left: 12px;
+            color: #c62828;
+            background: rgba(234,67,53,0.1);
+        }
+
+        .grid-line {
+            position: absolute;
+            background: var(--border-subtle);
+        }
+
+        .grid-line.horizontal {
+            width: 100%;
+            height: 1px;
+        }
+
+        .grid-line.vertical {
+            width: 1px;
+            height: 100%;
+        }
+
+        .grid-line.center {
+            background: var(--border-medium);
+        }
+
+        .axis-label {
+            position: absolute;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--text-primary);
+        }
+
+        .axis-label.x-axis {
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .axis-label.y-axis {
+            left: 24px;
+            top: 50%;
+            transform: rotate(-90deg) translateX(-50%);
+            transform-origin: left center;
+            white-space: nowrap;
+        }
+
+        .axis-marker {
+            position: absolute;
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            cursor: grab;
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            user-select: none;
+        }
+
+        .bubble:hover {
+            z-index: 100;
+            transform: scale(1.03);
+        }
+
+        .bubble.dragging {
+            cursor: grabbing;
+            z-index: 1000;
+        }
+
+        .bubble.green {
+            background: radial-gradient(circle at 35% 35%, rgba(52,168,83,0.95), rgba(52,168,83,0.8));
+            box-shadow: 0 4px 16px var(--green-glow), 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .bubble.yellow {
+            background: radial-gradient(circle at 35% 35%, rgba(249,171,0,0.95), rgba(249,171,0,0.8));
+            box-shadow: 0 4px 16px var(--yellow-glow), 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .bubble.red {
+            background: radial-gradient(circle at 35% 35%, rgba(234,67,53,0.95), rgba(234,67,53,0.8));
+            box-shadow: 0 4px 16px var(--red-glow), 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .bubble.selected {
+            box-shadow: 0 0 0 3px var(--accent-blue), 0 4px 16px var(--green-glow);
+        }
+
+        .bubble.selected.yellow {
+            box-shadow: 0 0 0 3px var(--accent-blue), 0 4px 16px var(--yellow-glow);
+        }
+
+        .bubble.selected.red {
+            box-shadow: 0 0 0 3px var(--accent-blue), 0 4px 16px var(--red-glow);
+        }
+
+        .bubble-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.8);
+            padding: 4px;
+            max-width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .bubble-label.outside {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 4px;
+            max-width: 120px;
+            overflow: visible;
+            background: rgba(255,255,255,0.9);
+            border-radius: 4px;
+            padding: 2px 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Resize Handle */
+        .bubble-resize {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            background: var(--bg-primary);
+            border: 2px solid var(--text-secondary);
+            border-radius: 50%;
+            cursor: se-resize;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .bubble:hover .bubble-resize,
+        .bubble.selected .bubble-resize {
+            opacity: 1;
+        }
+
+        /* Quick Add Hint */
+        .quick-add-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .chart-canvas:not(:has(.bubble)):hover .quick-add-hint {
+            opacity: 1;
+        }
+
+        .quick-add-hint svg {
+            width: 48px;
+            height: 48px;
+            stroke: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .quick-add-hint p {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Side Panel */
+        .side-panel {
+            width: 340px;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: -4px 0 16px rgba(0,0,0,0.05);
+        }
+
+        .side-panel.hidden {
+            transform: translateX(100%);
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .panel-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .panel-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-medium);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-dim);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Slider */
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .slider-track {
+            flex: 1;
+            position: relative;
+        }
+
+        .form-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .form-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            min-width: 44px;
+            text-align: right;
+        }
+
+        /* Time slider warning state */
+        .form-group.time-warning .form-slider::-webkit-slider-thumb {
+            background: var(--red-experience);
+        }
+
+        .form-group.time-warning .slider-value {
+            color: var(--red-experience);
+        }
+
+        .time-available {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .time-available.over {
+            color: var(--red-experience);
+            font-weight: 500;
+        }
+
+        /* Experience Buttons */
+        .experience-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .exp-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border-radius: 10px;
+            border: 2px solid var(--border-subtle);
+            background: var(--bg-primary);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .exp-btn:hover {
+            border-color: var(--border-medium);
+            background: var(--bg-tertiary);
+        }
+
+        .exp-btn.green.selected {
+            background: rgba(52,168,83,0.12);
+            border-color: var(--green-experience);
+            color: var(--green-experience);
+        }
+
+        .exp-btn.yellow.selected {
+            background: rgba(249,171,0,0.12);
+            border-color: var(--yellow-experience);
+            color: #b17900;
+        }
+
+        .exp-btn.red.selected {
+            background: rgba(234,67,53,0.12);
+            border-color: var(--red-experience);
+            color: var(--red-experience);
+        }
+
+        .delete-category-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(234,67,53,0.3);
+            background: rgba(234,67,53,0.08);
+            color: var(--red-experience);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            margin-top: 32px;
+        }
+
+        .delete-category-btn:hover {
+            background: rgba(234,67,53,0.15);
+            border-color: var(--red-experience);
+        }
+
+        /* Legend */
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            padding: 20px;
+            flex-wrap: wrap;
+            background: var(--bg-primary);
+            margin: 0 32px 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .legend-dot.green { background: var(--green-experience); }
+        .legend-dot.yellow { background: var(--yellow-experience); }
+        .legend-dot.red { background: var(--red-experience); }
+
+        .legend-size {
+            font-size: 13px;
+            color: var(--text-muted);
+            padding-left: 16px;
+            border-left: 1px solid var(--border-subtle);
+        }
+
+        /* Category chips */
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px 32px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .category-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .category-chip:hover {
+            border-color: var(--border-medium);
+            background: var(--bg-secondary);
+        }
+
+        .category-chip.selected {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue-dim);
+        }
+
+        .chip-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .chip-dot.green { background: var(--green-experience); }
+        .chip-dot.yellow { background: var(--yellow-experience); }
+        .chip-dot.red { background: var(--red-experience); }
+
+        /* Instructions */
+        .instructions {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: flex;
+            gap: 28px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-lg);
+            z-index: 50;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instruction-key {
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-radius: 8px;
+            padding: 10px 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            font-size: 13px;
+            max-width: 240px;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .side-panel {
+                position: fixed;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .instructions {
+                display: none;
+            }
+
+            .time-budget {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <circle cx="6" cy="6" r="2"/>
+                            <circle cx="18" cy="8" r="2.5"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Personal Work Portfolio</span>
+                </div>
+                <div class="time-budget">
+                    <span>Time Budget:</span>
+                    <div class="time-budget-bar">
+                        <div class="time-budget-fill ok" id="timeBudgetFill" style="width: 0%"></div>
+                    </div>
+                    <span class="time-budget-text" id="timeBudgetText">0% / 100%</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn" id="clearAllBtn">Clear All</button>
+                <button class="btn btn-primary" id="addBubbleBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add Category
+                </button>
+                <button class="btn" id="exportBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download Image
+                </button>
+            </div>
+        </header>
+
+        <!-- Category chips -->
+        <div class="category-list" id="categoryList"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Chart Area -->
+            <div class="chart-area">
+                <div class="chart-wrapper">
+                    <div class="chart-canvas" id="chartCanvas">
+                        <!-- Grid -->
+                        <div class="chart-grid" id="chartGrid">
+                            <!-- Quadrant Shading -->
+                            <div class="quadrant-shade top-right"></div>
+                            <div class="quadrant-shade bottom-left"></div>
+                            
+                            <!-- Quadrant Labels -->
+                            <span class="quadrant-label top-right">Highest Value</span>
+                            <span class="quadrant-label bottom-left">Needs Rethinking</span>
+                            
+                            <div class="grid-line horizontal" style="top: 0;"></div>
+                            <div class="grid-line horizontal center" style="top: 50%;"></div>
+                            <div class="grid-line horizontal" style="top: 100%;"></div>
+                            <div class="grid-line vertical" style="left: 0;"></div>
+                            <div class="grid-line vertical center" style="left: 50%;"></div>
+                            <div class="grid-line vertical" style="left: 100%;"></div>
+                        </div>
+
+                        <!-- Axis Labels -->
+                        <span class="axis-label x-axis">Business Value →</span>
+                        <span class="axis-label y-axis">Personal Capability →</span>
+
+                        <!-- Axis Markers -->
+                        <span class="axis-marker" style="bottom: 48px; left: 90px;">Low</span>
+                        <span class="axis-marker" style="bottom: 48px; right: 60px;">High</span>
+                        <span class="axis-marker" style="left: 20px; bottom: 70px;">Low</span>
+                        <span class="axis-marker" style="left: 18px; top: 70px;">High</span>
+
+                        <!-- Bubbles Container -->
+                        <div id="bubblesContainer"></div>
+
+                        <!-- Quick Add Hint -->
+                        <div class="quick-add-hint">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg>
+                            <p>Double-click to add a work category</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot green"></span>
+                        <span>Highly Rewarding</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot yellow"></span>
+                        <span>Less Than Optimal</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot red"></span>
+                        <span>Actively Dislike</span>
+                    </div>
+                    <span class="legend-size">Bubble size = % of your time</span>
+                </div>
+            </div>
+
+            <!-- Side Panel -->
+            <aside class="side-panel hidden" id="sidePanel">
+                <div class="panel-header">
+                    <span class="panel-title">Edit Category</span>
+                    <button class="panel-close" id="panelClose">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label class="form-label">Category Name</label>
+                        <input type="text" class="form-input" id="editName" placeholder="e.g., Client Presentations">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Business Value</label>
+                        <div class="slider-group">
+                            <div class="slider-track">
+                                <input type="range" class="form-slider" id="editValue" min="0" max="100" value="50">
+                            </div>
+                            <span class="slider-value" id="editValueDisplay">50%</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Personal Capability</label>
+                        <div class="slider-group">
+                            <div class="slider-track">
+                                <input type="range" class="form-slider" id="editCapability" min="0" max="100" value="50">
+                            </div>
+                            <span class="slider-value" id="editCapabilityDisplay">50%</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="timeFormGroup">
+                        <label class="form-label">Time Allocation</label>
+                        <div class="slider-group">
+                            <div class="slider-track">
+                                <input type="range" class="form-slider" id="editTime" min="1" max="100" value="10">
+                            </div>
+                            <span class="slider-value" id="editTimeDisplay">10%</span>
+                        </div>
+                        <div class="time-available" id="timeAvailable">Available: 100%</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">How Rewarding Is This Task?</label>
+                        <div class="experience-group">
+                            <button class="exp-btn green" data-exp="green">Highly</button>
+                            <button class="exp-btn yellow" data-exp="yellow">Less Than Optimal</button>
+                            <button class="exp-btn red" data-exp="red">Actively Dislike</button>
+                        </div>
+                    </div>
+
+                    <button class="delete-category-btn" id="deleteBtn">Delete Category</button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <div class="instruction-item">
+                <span class="instruction-key">Double-click</span>
+                <span>Add bubble</span>
+            </div>
+            <div class="instruction-item">
+                <span class="instruction-key">Drag</span>
+                <span>Move bubble</span>
+            </div>
+            <div class="instruction-item">
+                <span class="instruction-key">Drag corner</span>
+                <span>Resize</span>
+            </div>
+            <div class="instruction-item">
+                <span class="instruction-key">Click</span>
+                <span>Edit details</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // State
+        let categories = [];
+        let selectedId = null;
+        let dragState = null;
+
+        // DOM Elements
+        const chartCanvas = document.getElementById('chartCanvas');
+        const chartGrid = document.getElementById('chartGrid');
+        const bubblesContainer = document.getElementById('bubblesContainer');
+        const categoryList = document.getElementById('categoryList');
+        const sidePanel = document.getElementById('sidePanel');
+        const tooltip = document.getElementById('tooltip');
+        const timeBudgetFill = document.getElementById('timeBudgetFill');
+        const timeBudgetText = document.getElementById('timeBudgetText');
+        const timeAvailable = document.getElementById('timeAvailable');
+        const timeFormGroup = document.getElementById('timeFormGroup');
+        const addBubbleBtn = document.getElementById('addBubbleBtn');
+
+        // Form elements
+        const editName = document.getElementById('editName');
+        const editValue = document.getElementById('editValue');
+        const editCapability = document.getElementById('editCapability');
+        const editTime = document.getElementById('editTime');
+        const expBtns = document.querySelectorAll('.exp-btn');
+
+        // Generate unique ID
+        function generateId() {
+            return 'cat_' + Date.now() + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Calculate total time
+        function getTotalTime() {
+            return categories.reduce((sum, cat) => sum + cat.time, 0);
+        }
+
+        // Get available time for a category (excluding its own time)
+        function getAvailableTime(excludeId = null) {
+            return 100 - categories.reduce((sum, cat) => {
+                if (cat.id === excludeId) return sum;
+                return sum + cat.time;
+            }, 0);
+        }
+
+        // Update time budget display
+        function updateTimeBudget() {
+            const total = getTotalTime();
+            const percentage = Math.min(total, 100);
+            
+            timeBudgetFill.style.width = percentage + '%';
+            timeBudgetText.textContent = total + '% / 100%';
+            
+            // Update fill color
+            timeBudgetFill.classList.remove('ok', 'warning', 'over');
+            if (total > 100) {
+                timeBudgetFill.classList.add('over');
+                timeBudgetText.classList.add('over');
+            } else if (total > 85) {
+                timeBudgetFill.classList.add('warning');
+                timeBudgetText.classList.remove('over');
+            } else {
+                timeBudgetFill.classList.add('ok');
+                timeBudgetText.classList.remove('over');
+            }
+
+            // Enable/disable add button
+            const available = getAvailableTime();
+            addBubbleBtn.disabled = available < 1;
+        }
+
+        // Update available time display in panel
+        function updateAvailableTimeDisplay() {
+            if (!selectedId) return;
+            
+            const available = getAvailableTime(selectedId);
+            const cat = categories.find(c => c.id === selectedId);
+            const maxAllowed = available + (cat ? cat.time : 0);
+            
+            timeAvailable.textContent = `Available: ${available}% (max for this task: ${maxAllowed}%)`;
+            
+            if (available < 0) {
+                timeAvailable.classList.add('over');
+                timeFormGroup.classList.add('time-warning');
+            } else {
+                timeAvailable.classList.remove('over');
+                timeFormGroup.classList.remove('time-warning');
+            }
+
+            // Update slider max (capped at 100%)
+            editTime.max = Math.min(100, Math.max(1, maxAllowed));
+        }
+
+        // Get grid bounds
+        function getGridBounds() {
+            const rect = chartGrid.getBoundingClientRect();
+            return {
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height
+            };
+        }
+
+        // Convert position to values
+        function posToValues(clientX, clientY) {
+            const bounds = getGridBounds();
+            const value = Math.round(Math.max(0, Math.min(100, ((clientX - bounds.left) / bounds.width) * 100)));
+            const capability = Math.round(Math.max(0, Math.min(100, 100 - ((clientY - bounds.top) / bounds.height) * 100)));
+            return { value, capability };
+        }
+
+        // Add new category
+        function addCategory(value = 50, capability = 50) {
+            const available = getAvailableTime();
+            if (available < 1) {
+                alert('No time budget remaining. Please reduce time on existing categories first.');
+                return;
+            }
+
+            const defaultTime = Math.min(10, available);
+            const newCat = {
+                id: generateId(),
+                name: '',
+                value,
+                capability,
+                time: defaultTime,
+                experience: 'yellow'
+            };
+            categories.push(newCat);
+            selectCategory(newCat.id);
+            render();
+            
+            setTimeout(() => editName.focus(), 100);
+        }
+
+        // Select category
+        function selectCategory(id) {
+            selectedId = id;
+            const cat = categories.find(c => c.id === id);
+            
+            if (cat) {
+                sidePanel.classList.remove('hidden');
+                editName.value = cat.name;
+                editValue.value = cat.value;
+                editCapability.value = cat.capability;
+                editTime.value = cat.time;
+                
+                document.getElementById('editValueDisplay').textContent = cat.value + '%';
+                document.getElementById('editCapabilityDisplay').textContent = cat.capability + '%';
+                document.getElementById('editTimeDisplay').textContent = cat.time + '%';
+                
+                expBtns.forEach(btn => {
+                    btn.classList.toggle('selected', btn.dataset.exp === cat.experience);
+                });
+
+                updateAvailableTimeDisplay();
+            }
+            
+            render();
+        }
+
+        // Deselect
+        function deselectCategory() {
+            selectedId = null;
+            sidePanel.classList.add('hidden');
+            render();
+        }
+
+        // Update category
+        function updateCategory(id, updates) {
+            const cat = categories.find(c => c.id === id);
+            if (cat) {
+                // If updating time, enforce the limit
+                if (updates.time !== undefined) {
+                    const maxAllowed = getAvailableTime(id) + cat.time;
+                    updates.time = Math.min(updates.time, maxAllowed);
+                    updates.time = Math.max(1, updates.time);
+                }
+                Object.assign(cat, updates);
+                render();
+            }
+        }
+
+        // Delete category
+        function deleteCategory(id) {
+            categories = categories.filter(c => c.id !== id);
+            if (selectedId === id) {
+                deselectCategory();
+            }
+            render();
+        }
+
+        // Render category chips
+        function renderChips() {
+            categoryList.innerHTML = categories.map(cat => `
+                <div class="category-chip ${selectedId === cat.id ? 'selected' : ''}" data-id="${cat.id}">
+                    <span class="chip-dot ${cat.experience}"></span>
+                    <span>${cat.name || 'Unnamed'}</span>
+                </div>
+            `).join('');
+
+            categoryList.querySelectorAll('.category-chip').forEach(chip => {
+                chip.addEventListener('click', () => selectCategory(chip.dataset.id));
+            });
+        }
+
+        // Render bubbles
+        function renderBubbles() {
+            const bounds = getGridBounds();
+            const canvasRect = chartCanvas.getBoundingClientRect();
+            
+            bubblesContainer.innerHTML = categories.map(cat => {
+                const size = 50 + (cat.time * 2.5);
+                const x = (cat.value / 100) * bounds.width + (bounds.left - canvasRect.left) - size / 2;
+                const y = ((100 - cat.capability) / 100) * bounds.height + (bounds.top - canvasRect.top) - size / 2;
+                
+                return `
+                    <div class="bubble ${cat.experience} ${selectedId === cat.id ? 'selected' : ''}"
+                         style="left: ${x}px; top: ${y}px; width: ${size}px; height: ${size}px;"
+                         data-id="${cat.id}">
+                        <span class="bubble-label${size < 60 ? ' outside' : ''}" style="font-size: ${size < 60 ? '9px' : '10px'}">${cat.name || 'Unnamed'}</span>
+                        <div class="bubble-resize" data-id="${cat.id}"></div>
+                    </div>
+                `;
+            }).join('');
+
+            bubblesContainer.querySelectorAll('.bubble').forEach(bubble => {
+                const id = bubble.dataset.id;
+                
+                bubble.addEventListener('mousedown', (e) => {
+                    if (e.target.classList.contains('bubble-resize')) return;
+                    e.preventDefault();
+                    startDrag(id, e, 'move');
+                });
+
+                bubble.addEventListener('click', (e) => {
+                    if (!dragState?.moved) {
+                        selectCategory(id);
+                    }
+                });
+
+                bubble.addEventListener('mouseenter', (e) => showTooltip(e, id));
+                bubble.addEventListener('mouseleave', hideTooltip);
+                bubble.addEventListener('mousemove', moveTooltip);
+            });
+
+            bubblesContainer.querySelectorAll('.bubble-resize').forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    startDrag(handle.dataset.id, e, 'resize');
+                });
+            });
+        }
+
+        // Drag functionality
+        function startDrag(id, e, type) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+
+            dragState = {
+                id,
+                type,
+                startX: e.clientX,
+                startY: e.clientY,
+                startValue: cat.value,
+                startCapability: cat.capability,
+                startTime: cat.time,
+                maxTime: getAvailableTime(id) + cat.time,
+                moved: false
+            };
+
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function onDrag(e) {
+            if (!dragState) return;
+
+            const dx = e.clientX - dragState.startX;
+            const dy = e.clientY - dragState.startY;
+
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+                dragState.moved = true;
+            }
+
+            const bounds = getGridBounds();
+            const cat = categories.find(c => c.id === dragState.id);
+            if (!cat) return;
+
+            if (dragState.type === 'move') {
+                const valueDelta = (dx / bounds.width) * 100;
+                const capDelta = -(dy / bounds.height) * 100;
+                
+                cat.value = Math.round(Math.max(0, Math.min(100, dragState.startValue + valueDelta)));
+                cat.capability = Math.round(Math.max(0, Math.min(100, dragState.startCapability + capDelta)));
+                
+                if (selectedId === cat.id) {
+                    editValue.value = cat.value;
+                    editCapability.value = cat.capability;
+                    document.getElementById('editValueDisplay').textContent = cat.value + '%';
+                    document.getElementById('editCapabilityDisplay').textContent = cat.capability + '%';
+                }
+            } else if (dragState.type === 'resize') {
+                const sizeDelta = Math.max(dx, dy) / 3;
+                let newTime = Math.round(dragState.startTime + sizeDelta);
+                newTime = Math.max(1, Math.min(newTime, dragState.maxTime));
+                cat.time = newTime;
+                
+                if (selectedId === cat.id) {
+                    editTime.value = cat.time;
+                    document.getElementById('editTimeDisplay').textContent = cat.time + '%';
+                    updateAvailableTimeDisplay();
+                }
+                updateTimeBudget();
+            }
+
+            renderBubbles();
+        }
+
+        function endDrag() {
+            setTimeout(() => {
+                dragState = null;
+            }, 10);
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+        }
+
+        // Tooltip
+        function showTooltip(e, id) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+            
+            const expLabel = cat.experience === 'green' ? 'Highly Rewarding' : 
+                            cat.experience === 'yellow' ? 'Less Than Optimal' : 'Actively Dislike';
+            
+            tooltip.innerHTML = `
+                <strong>${cat.name || 'Unnamed'}</strong><br>
+                Value: ${cat.value}% · Capability: ${cat.capability}%<br>
+                Time: ${cat.time}% · ${expLabel}
+            `;
+            tooltip.classList.add('visible');
+            moveTooltip(e);
+        }
+
+        function moveTooltip(e) {
+            tooltip.style.left = (e.clientX + 14) + 'px';
+            tooltip.style.top = (e.clientY + 14) + 'px';
+        }
+
+        function hideTooltip() {
+            tooltip.classList.remove('visible');
+        }
+
+        // Main render
+        function render() {
+            renderChips();
+            renderBubbles();
+            updateTimeBudget();
+            if (selectedId) {
+                updateAvailableTimeDisplay();
+            }
+        }
+
+        // Event Listeners
+        addBubbleBtn.addEventListener('click', () => addCategory());
+
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+            if (categories.length === 0 || confirm('Clear all categories?')) {
+                categories = [];
+                deselectCategory();
+                render();
+            }
+        });
+
+        document.getElementById('panelClose').addEventListener('click', deselectCategory);
+        document.getElementById('deleteBtn').addEventListener('click', () => {
+            if (selectedId) deleteCategory(selectedId);
+        });
+
+        // Double-click to add
+        chartCanvas.addEventListener('dblclick', (e) => {
+            if (e.target.closest('.bubble')) return;
+            const { value, capability } = posToValues(e.clientX, e.clientY);
+            addCategory(value, capability);
+        });
+
+        // Click outside to deselect
+        chartCanvas.addEventListener('click', (e) => {
+            if (!e.target.closest('.bubble') && selectedId) {
+                deselectCategory();
+            }
+        });
+
+        // Form inputs
+        editName.addEventListener('input', () => {
+            if (selectedId) updateCategory(selectedId, { name: editName.value });
+        });
+
+        editValue.addEventListener('input', () => {
+            document.getElementById('editValueDisplay').textContent = editValue.value + '%';
+            if (selectedId) updateCategory(selectedId, { value: parseInt(editValue.value) });
+        });
+
+        editCapability.addEventListener('input', () => {
+            document.getElementById('editCapabilityDisplay').textContent = editCapability.value + '%';
+            if (selectedId) updateCategory(selectedId, { capability: parseInt(editCapability.value) });
+        });
+
+        editTime.addEventListener('input', () => {
+            const newTime = parseInt(editTime.value);
+            document.getElementById('editTimeDisplay').textContent = newTime + '%';
+            if (selectedId) {
+                updateCategory(selectedId, { time: newTime });
+            }
+        });
+
+        expBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (selectedId) {
+                    updateCategory(selectedId, { experience: btn.dataset.exp });
+                    expBtns.forEach(b => b.classList.toggle('selected', b === btn));
+                }
+            });
+        });
+
+        // Export - using html2canvas loaded in head
+        document.getElementById('exportBtn').addEventListener('click', async () => {
+            // Deselect any bubble before export for cleaner look
+            const wasSelected = selectedId;
+            if (selectedId) {
+                document.querySelectorAll('.bubble.selected').forEach(b => b.classList.remove('selected'));
+            }
+            
+            // Hide resize handles
+            document.querySelectorAll('.bubble-resize').forEach(h => h.style.display = 'none');
+            
+            try {
+                const canvas = await html2canvas(chartCanvas, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true
+                });
+                
+                const link = document.createElement('a');
+                link.download = 'work-portfolio-analysis.png';
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (err) {
+                console.error('Export failed:', err);
+                alert('Export failed. Please try again.');
+            }
+            
+            // Restore resize handles
+            document.querySelectorAll('.bubble-resize').forEach(h => h.style.display = '');
+            
+            // Restore selection
+            if (wasSelected) {
+                render();
+            }
+        });
+
+        // Resize handler
+        window.addEventListener('resize', render);
+
+        // Initialize with 10 PM-focused sample tasks with DIVERSE time allocations (total = 100%)
+        // Range: 2% to 25% for clear visual differentiation
+        categories = [
+            // LARGE TIME CONSUMERS
+            { 
+                id: generateId(), 
+                name: 'Meeting Facilitation', 
+                value: 32,
+                capability: 82,
+                time: 25,  // Largest - huge time sink
+                experience: 'yellow'
+            },
+            { 
+                id: generateId(), 
+                name: 'Stakeholder Alignment', 
+                value: 78,
+                capability: 55,
+                time: 20,  // Second largest
+                experience: 'yellow'
+            },
+            
+            // MEDIUM TIME CONSUMERS
+            { 
+                id: generateId(), 
+                name: 'Writing Product Requirements', 
+                value: 62,
+                capability: 78,
+                time: 15,
+                experience: 'yellow'
+            },
+            { 
+                id: generateId(), 
+                name: 'Customer Discovery', 
+                value: 94,
+                capability: 88,
+                time: 12,
+                experience: 'green'
+            },
+            { 
+                id: generateId(), 
+                name: 'Data Analysis', 
+                value: 85,
+                capability: 35,
+                time: 10,
+                experience: 'yellow'
+            },
+            
+            // SMALLER TIME CONSUMERS
+            { 
+                id: generateId(), 
+                name: 'Product Strategy', 
+                value: 90,
+                capability: 72,
+                time: 6,  // High value but limited time
+                experience: 'green'
+            },
+            { 
+                id: generateId(), 
+                name: 'Status Reporting', 
+                value: 22,
+                capability: 90,
+                time: 5,
+                experience: 'red'
+            },
+            { 
+                id: generateId(), 
+                name: 'Launch Coordination', 
+                value: 88,
+                capability: 65,
+                time: 4,  // Bursts during launches
+                experience: 'green'
+            },
+            
+            // MINIMAL TIME CONSUMERS
+            { 
+                id: generateId(), 
+                name: 'Technical Architecture', 
+                value: 75,
+                capability: 25,
+                time: 2,  // Avoided due to skill gap
+                experience: 'red'
+            },
+            { 
+                id: generateId(), 
+                name: 'Expense Reports', 
+                value: 10,
+                capability: 20,
+                time: 1,  // Tiny but annoying
+                experience: 'red'
+            }
+        ];
+        render();
+    </script>
+</body>
+</html>
